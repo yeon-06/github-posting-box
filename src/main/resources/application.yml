@@ -1,5 +1,5 @@
 blog:
-  link: https://yeonyeon.tistory.com
-  contents-tag: <div class="post-item">
-  title-tag: <span class="title">
-  date-tag: <span class="date">
+  url: https://yeonyeon.tistory.com
+  contents-class-name: post-item
+  title-class-name: title
+  date-class-name: date

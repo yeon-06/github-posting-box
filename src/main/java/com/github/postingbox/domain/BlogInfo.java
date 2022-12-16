@@ -9,15 +9,16 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConfigurationProperties(prefix = "blog")
 public class BlogInfo {
 
-    private final String link;
-    private final String contentsTag;
-    private final String titleTag;
-    private final String dateTag;
+    private final String url;
+    private final String contentsClassName;
+    private final String titleClassName;
+    private final String dateClassName;
 
-    public BlogInfo(final String link, final String contentsTag, final String titleTag, final String dateTag) {
-        this.link = link;
-        this.contentsTag = contentsTag;
-        this.titleTag = titleTag;
-        this.dateTag = dateTag;
+    public BlogInfo(final String url, final String contentsClassName, final String titleClassName,
+                    final String dateClassName) {
+        this.url = url;
+        this.contentsClassName = contentsClassName;
+        this.titleClassName = titleClassName;
+        this.dateClassName = dateClassName;
     }
 }
