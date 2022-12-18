@@ -3,3 +3,8 @@ blog:
   contents-class-name: post-item
   title-class-name: title
   date-class-name: date
+
+github:
+  access-token: temp
+  gist-file-name: posting-box.md
+  gist-id: d17003be7b1aa34581dc18d6ff9a3844
