@@ -2,6 +2,8 @@ package com.github.postingbox.service;
 
 import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
+import com.github.postingbox.domain.GitHubInfo;
+import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,10 +17,14 @@ public class PostingService {
 
     private final BlogInfo blogInfo;
     private final HtmlSupporter htmlSupporter;
+    private final GitHubInfo gitHubInfo;
+    private final GitHubClient gitHubClient;
 
-    public PostingService(final BlogInfo blogInfo, final HtmlSupporter htmlSupporter) {
+    public PostingService(final BlogInfo blogInfo, final HtmlSupporter htmlSupporter, final GitHubInfo gitHubInfo) {
         this.blogInfo = blogInfo;
         this.htmlSupporter = htmlSupporter;
+        this.gitHubInfo = gitHubInfo;
+        this.gitHubClient = new GitHubClient(gitHubInfo.getAccessToken());
     }
 
     public void updatePostingBox() {
@@ -27,7 +33,11 @@ public class PostingService {
         List<Board> boards = toBoards(elements);
         String content = generateContent(boards);
 
-        // TODO Git API 호출해서 gist 업데이트
+        gitHubClient.updateGist(
+                gitHubInfo.getGistId(),
+                gitHubInfo.getGistFileName(),
+                content
+        );
     }
 
     private List<Board> toBoards(final Elements elements) {
@@ -50,7 +60,7 @@ public class PostingService {
                     .append(board.getDate())
                     .append("] ")
                     .append(board.getTitle())
-                    .append(" <br/> ");
+                    .append(System.lineSeparator());
         }
         return stringBuilder.toString();
     }
