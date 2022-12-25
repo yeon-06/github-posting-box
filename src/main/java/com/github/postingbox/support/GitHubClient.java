@@ -17,10 +17,14 @@ public class GitHubClient {
         }
     }
 
-    public void updateGist(final String id, final String fileName, final String content) throws IOException {
-        gitHub.getGist(id)
-                .update()
-                .updateFile(fileName, content)
-                .update();
+    public void updateGist(final String id, final String fileName, final String content) {
+        try {
+            gitHub.getGist(id)
+                    .update()
+                    .updateFile(fileName, content)
+                    .update();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
