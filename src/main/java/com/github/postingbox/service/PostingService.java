@@ -5,6 +5,7 @@ import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.GitHubInfo;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
@@ -56,12 +57,23 @@ public class PostingService {
     private String generateContent(final List<Board> boards) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Board board : boards) {
-            stringBuilder.append("[")
-                    .append(board.getDate())
-                    .append("] ")
+            stringBuilder.append(newButton(board))
+                    .append(toDate(board))
                     .append(board.getTitle())
                     .append(System.lineSeparator());
         }
         return stringBuilder.toString();
+    }
+
+    private String newButton(final Board board) {
+        if (board.getDate().isEqual(LocalDate.now())) {
+            return "🆕 ";
+        }
+        return "";
+    }
+
+    private String toDate(final Board board) {
+        LocalDate date = board.getDate();
+        return String.format("(%d.%02d.%02d) ", date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth());
     }
 }
