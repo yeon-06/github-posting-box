@@ -17,12 +17,12 @@ public class GitHubClient {
         }
     }
 
-    public void updateGist(final String id, final String fileName, final String content) {
+    public void updateFile(final String repoName, final String fileName, final String content,
+                           final String commitMessage) {
         try {
-            gitHub.getGist(id)
-                    .update()
-                    .updateFile(fileName, content)
-                    .update();
+            gitHub.getRepository(repoName)
+                    .getFileContent(fileName)
+                    .update(content, commitMessage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

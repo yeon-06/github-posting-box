@@ -13,27 +13,28 @@ public class Boards {
         this.value = value;
     }
 
-    public String generateContents() {
+    public boolean containsToday() {
+        return value.stream()
+                .anyMatch(Board::isTodayPost);
+    }
+
+    public String generateContents(final String blogUrl) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Board board : value) {
-            stringBuilder.append(newButton(board))
-                    .append(toDate(board))
+            stringBuilder.append(toDate(board))
+                    .append("[")
                     .append(board.getTitle())
+                    .append("](")
+                    .append(blogUrl)
+                    .append(board.getLink())
+                    .append(")")
                     .append(System.lineSeparator());
         }
         return stringBuilder.toString();
     }
 
-
-    private String newButton(final Board board) {
-        if (board.getDate().isEqual(LocalDate.now())) {
-            return "🆕 ";
-        }
-        return "";
-    }
-
     private String toDate(final Board board) {
         LocalDate date = board.getDate();
-        return String.format("(%d.%02d.%02d) ", date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth());
+        return String.format("- (%d.%02d.%02d) ", date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth());
     }
 }

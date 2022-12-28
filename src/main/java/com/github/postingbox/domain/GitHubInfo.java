@@ -10,12 +10,10 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 public class GitHubInfo {
 
     private final String accessToken;
-    private final String gistFileName;
-    private final String gistId;
+    private final String repoName;
 
-    public GitHubInfo(final String accessToken, final String gistFileName, final String gistId) {
+    public GitHubInfo(final String accessToken, final String repoName) {
         this.accessToken = accessToken;
-        this.gistFileName = gistFileName;
-        this.gistId = gistId;
+        this.repoName = repoName;
     }
 }

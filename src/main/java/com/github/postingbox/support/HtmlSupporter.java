@@ -30,4 +30,9 @@ public class HtmlSupporter {
         }
         return extractedElement.text();
     }
+
+    public String extractLink(final Element element) {
+        return element.getElementsByTag("a")
+                .attr("href");
+    }
 }

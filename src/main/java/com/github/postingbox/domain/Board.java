@@ -9,11 +9,17 @@ import lombok.Getter;
 public class Board {
 
     private final String title;
+    private final String link;
     private final LocalDate date;
 
-    public Board(final String title, final String date) {
+    public Board(final String title, final String link, final String date) {
         this.title = title;
+        this.link = link;
         this.date = toDate(date);
+    }
+
+    public boolean isTodayPost() {
+        return date.isEqual(LocalDate.now());
     }
 
     private LocalDate toDate(final String date) {
@@ -23,5 +29,4 @@ public class Board {
             return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy. MM. d."));
         }
     }
-
 }
