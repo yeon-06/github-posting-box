@@ -10,11 +10,16 @@ public class Board {
 
     private final String title;
     private final String link;
+    private final String summary;
+    private final String imageUrl;
     private final LocalDate date;
 
-    public Board(final String title, final String link, final String date) {
+    public Board(final String title, final String link, final String summary, final String imageUrl,
+                 final String date) {
         this.title = title;
         this.link = link;
+        this.summary = summary;
+        this.imageUrl = imageUrl;
         this.date = toDate(date);
     }
 

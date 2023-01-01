@@ -2,6 +2,7 @@ blog:
   url: https://yeonyeon.tistory.com
   contents-class-name: post-item
   title-class-name: title
+  summary-class-name: excerpt
   date-class-name: date
 
 github:

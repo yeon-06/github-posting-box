@@ -35,4 +35,9 @@ public class HtmlSupporter {
         return element.getElementsByTag("a")
                 .attr("href");
     }
+
+    public String extractImageLink(final Element element) {
+        return element.getElementsByTag("img")
+                .attr("src");
+    }
 }
