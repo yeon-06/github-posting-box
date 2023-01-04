@@ -2,16 +2,36 @@ package com.github.postingbox.support;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FileSupporter {
 
-    public File resize(final String path, final String filePath, final int size) {
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+
+    public String findFileContent(final String path) {
+        try {
+            FileReader fileReader = new FileReader(path);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            return bufferedReader.lines()
+                    .collect(Collectors.joining(LINE_SEPARATOR));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resizeAndSave(final String path, final String filePath, final int size) {
         try {
             BufferedImage bufferedImage = toBufferedImage(path);
             BufferedImage resizedBufferedImage = new BufferedImage(size, size, bufferedImage.getType());
@@ -20,10 +40,9 @@ public class FileSupporter {
             graphics.drawImage(bufferedImage, 0, 0, size, size, null);
             graphics.dispose();
 
-            File file = new File(filePath);
-            file.createNewFile();
+            Path createdPath = Files.createFile(Paths.get(filePath));
+            File file = new File(createdPath.toUri());
             ImageIO.write(resizedBufferedImage, "png", file);
-            return file;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
