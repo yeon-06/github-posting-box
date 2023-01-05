@@ -4,14 +4,17 @@ import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
+import com.github.postingbox.service.dto.ImageDto;
+import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,14 +37,15 @@ public class PostingService {
 
     private final BlogInfo blogInfo;
     private final HtmlSupporter htmlSupporter;
-    private final GitHubInfo gitHubInfo;
+    private final FileSupporter fileSupporter;
     private final GitHubClient gitHubClient;
 
-    public PostingService(final BlogInfo blogInfo, final HtmlSupporter htmlSupporter, final GitHubInfo gitHubInfo) {
+    public PostingService(final BlogInfo blogInfo, final HtmlSupporter htmlSupporter, final FileSupporter fileSupporter,
+                          final GitHubInfo gitHubInfo) {
         this.blogInfo = blogInfo;
         this.htmlSupporter = htmlSupporter;
-        this.gitHubInfo = gitHubInfo;
-        this.gitHubClient = new GitHubClient(gitHubInfo.getAccessToken());
+        this.fileSupporter = fileSupporter;
+        this.gitHubClient = new GitHubClient(gitHubInfo);
     }
 
     public void updatePostingBox() {
@@ -50,12 +54,7 @@ public class PostingService {
         Boards boards = toBoards(elements);
 
         if (boards.containsToday()) {
-            gitHubClient.updateFile(
-                    gitHubInfo.getRepoName(),
-                    "README.md",
-                    generateContents(boards),
-                    generateCommitMessage()
-            );
+            executeGitHubApi(boards);
         }
     }
 
@@ -76,16 +75,37 @@ public class PostingService {
         );
     }
 
-    private String generateContents(final Boards boards) {
-        try {
-            FileReader fileReader = new FileReader("./src/main/resources/templates/default.md");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String fileContents = bufferedReader.lines()
-                    .collect(Collectors.joining(LINE_SEPARATOR));
-            return fileContents + LINE_SEPARATOR + generateContents(boards, blogInfo.getUrl());
+    private void executeGitHubApi(final Boards boards) {
+        String imgDirectoryName = "img";
+        String branch = generateBranchName();
+        String commitMessage = generateCommitMessage();
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        gitHubClient.createBranch(branch);
+        try {
+            gitHubClient.deleteFiles(imgDirectoryName, branch);
+        } catch (RuntimeException ignore) {
+
+        }
+        Map<String, ImageDto> imageFiles = generateImageFiles(boards);
+        gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
+        uploadFiles(boards, imageFiles, branch);
+        gitHubClient.merge(branch, generateCommitMessage());
+    }
+
+    private String generateBranchName() {
+        return "refs/heads/post" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    private String generateContents(final Boards boards) {
+        String fileContents = fileSupporter.findFileContent("./src/main/resources/templates/default.md");
+        return fileContents + LINE_SEPARATOR + generateContents(boards, blogInfo.getUrl());
+    }
+
+    private void uploadFiles(final Boards boards, final Map<String, ImageDto> imageFiles, final String branch) {
+        for (Board board : boards.getValue()) {
+            String imageName = board.getResizedImageName();
+            byte[] content = imageFiles.get(imageName).getValue();
+            gitHubClient.uploadFile(imageName, content, branch);
         }
     }
 
@@ -117,7 +137,7 @@ public class PostingService {
     private String generateTdTag(final String blogUrl, final Board board) {
         return String.format(BOARD_INFO_FORMAT,
                 blogUrl + board.getLink(),
-                "https:" + board.getImageUrl(),
+                "./" + board.getResizedImageName(),
                 board.getTitle(),
                 board.getSummary().substring(0, 50) + "...",
                 toDate(board)
@@ -132,6 +152,20 @@ public class PostingService {
     private String generateCommitMessage() {
         String today = LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        return String.format("docs: %s 새로운 포스트 업로드", today);
+        return String.format("docs: %s 블로그 포스트 업데이트", today);
+    }
+
+    private Map<String, ImageDto> generateImageFiles(final Boards boards) {
+        Map<String, ImageDto> imageFiles = new HashMap<>();
+        for (Board board : boards.getValue()) {
+            String fileName = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE) + ".png";
+            board.setResizedImageName(fileName);
+            File file = fileSupporter.resizeAndSave(
+                    "https:" + board.getImageUrl(),
+                    "./src/main/resources/" + fileName + ".png",
+                    400);
+            imageFiles.put(fileName, new ImageDto(fileSupporter.findFileContent(file)));
+        }
+        return imageFiles;
     }
 }

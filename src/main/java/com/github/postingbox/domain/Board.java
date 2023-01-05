@@ -13,6 +13,7 @@ public class Board {
     private final String summary;
     private final String imageUrl;
     private final LocalDate date;
+    private String resizedImageName;
 
     public Board(final String title, final String link, final String summary, final String imageUrl,
                  final String date) {
@@ -25,6 +26,10 @@ public class Board {
 
     public boolean isTodayPost() {
         return date.isEqual(LocalDate.now());
+    }
+
+    public void setResizedImageName(final String resizedImageName) {
+        this.resizedImageName = resizedImageName;
     }
 
     private LocalDate toDate(final String date) {

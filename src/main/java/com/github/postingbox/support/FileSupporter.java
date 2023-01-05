@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,7 +32,15 @@ public class FileSupporter {
         }
     }
 
-    public void resizeAndSave(final String path, final String filePath, final int size) {
+    public byte[] findFileContent(final File file) {
+        try {
+            return FileUtils.readFileToByteArray(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public File resizeAndSave(final String path, final String filePath, final int size) {
         try {
             BufferedImage bufferedImage = toBufferedImage(path);
             BufferedImage resizedBufferedImage = new BufferedImage(size, size, bufferedImage.getType());
@@ -43,6 +52,7 @@ public class FileSupporter {
             Path createdPath = Files.createFile(Paths.get(filePath));
             File file = new File(createdPath.toUri());
             ImageIO.write(resizedBufferedImage, "png", file);
+            return file;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
