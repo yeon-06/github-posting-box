@@ -3,6 +3,7 @@ package com.github.postingbox.domain;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
 import lombok.Getter;
 
 @Getter

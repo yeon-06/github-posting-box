@@ -50,8 +50,7 @@ public class GitHubClient {
             for (GHContent content : contents) {
                 content.delete("docs: 사용하지 않는 이미지 삭제", branch);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignore) {
         }
     }
 
