@@ -96,9 +96,9 @@ public class PostingService {
 
         gitHubClient.createBranch(branch);
         gitHubClient.deleteFiles(IMG_DIRECTORY_NAME, branch);
-        gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
 
         Map<String, ImageDto> imageFiles = generateImageFiles(boards);
+        gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
         uploadFiles(boards, imageFiles, branch);
 
         gitHubClient.merge(branch, commitMessage);
@@ -112,10 +112,9 @@ public class PostingService {
     private void uploadFiles(final Boards boards, final Map<String, ImageDto> imageFiles, final String branch) {
         for (Board board : boards.getValue()) {
             String imageName = board.getResizedImageName();
-            // TODO - 이미지 파일 특정 폴더에 업로드하도록 변경
-            // String imagePath = String.format("./%s/%s", IMG_DIRECTORY_NAME, imageName);
+            String imagePath = String.format("%s/%s", IMG_DIRECTORY_NAME, imageName);
             byte[] content = imageFiles.get(imageName).getValue();
-            gitHubClient.uploadFile(imageName, content, branch);
+            gitHubClient.uploadFile(imagePath, content, branch);
         }
     }
 
@@ -148,7 +147,7 @@ public class PostingService {
     private String generateTdTag(final String blogUrl, final Board board) {
         return String.format(BOARD_INFO_FORMAT,
                 blogUrl + board.getLink(),
-                "./" + board.getResizedImageName(),
+                String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),
                 board.getTitle(),
                 board.getSummary().substring(0, 50) + "...",
                 toDate(board)
