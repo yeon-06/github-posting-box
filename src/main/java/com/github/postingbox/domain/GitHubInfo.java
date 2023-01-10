@@ -1,12 +1,5 @@
 package com.github.postingbox.domain;
 
-import lombok.Getter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
-
-@Getter
-@ConstructorBinding
-@ConfigurationProperties(prefix = "github")
 public class GitHubInfo {
 
     private final String accessToken;
@@ -15,5 +8,13 @@ public class GitHubInfo {
     public GitHubInfo(final String accessToken, final String repoName) {
         this.accessToken = accessToken;
         this.repoName = repoName;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRepoName() {
+        return repoName;
     }
 }

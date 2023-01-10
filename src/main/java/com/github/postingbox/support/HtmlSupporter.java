@@ -1,13 +1,12 @@
 package com.github.postingbox.support;
 
-import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Component;
 
-@Component
+import java.io.IOException;
+
 public class HtmlSupporter {
 
     public Document loadScript(final String urlPath) {

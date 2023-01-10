@@ -1,12 +1,5 @@
 package com.github.postingbox.domain;
 
-import lombok.Getter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
-
-@Getter
-@ConstructorBinding
-@ConfigurationProperties(prefix = "blog")
 public class BlogInfo {
 
     private final String url;
@@ -22,5 +15,25 @@ public class BlogInfo {
         this.titleClassName = titleClassName;
         this.summaryClassName = summaryClassName;
         this.dateClassName = dateClassName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getContentsClassName() {
+        return contentsClassName;
+    }
+
+    public String getTitleClassName() {
+        return titleClassName;
+    }
+
+    public String getSummaryClassName() {
+        return summaryClassName;
+    }
+
+    public String getDateClassName() {
+        return dateClassName;
     }
 }

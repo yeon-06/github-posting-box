@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import lombok.Getter;
-
-@Getter
 public class Board {
 
     private final String title;
@@ -39,5 +36,29 @@ public class Board {
         } catch (DateTimeParseException e) {
             return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy. MM. d."));
         }
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public String getResizedImageName() {
+        return resizedImageName;
     }
 }

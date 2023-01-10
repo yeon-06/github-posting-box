@@ -1,22 +1,17 @@
 package com.github.postingbox.support;
 
-import java.awt.Graphics2D;
+import org.apache.commons.io.FileUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
-import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FileSupporter {
 
     private static final String LINE_SEPARATOR = System.lineSeparator();
