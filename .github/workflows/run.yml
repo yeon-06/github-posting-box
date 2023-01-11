@@ -3,9 +3,6 @@ name: run
 on:
   schedule:
     - cron: '*/5 * * * *'
-  push:
-    branches:
-      - add-github-action
 
 jobs:
   build:
@@ -13,9 +10,10 @@ jobs:
 
     steps:
       - name: 💻 setup java 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v2
         with:
           java-version: '11'
+          distribution: 'temurin'
 
       - name: 🧬 bulid
         run: chmod +x gradlew; ./gradlew build
