@@ -3,6 +3,9 @@ name: run
 on:
   schedule:
     - cron: '*/5 * * * *'
+  push:
+    branches:
+      - add-github-action
 
 jobs:
   build:
