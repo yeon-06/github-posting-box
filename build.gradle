@@ -3,7 +3,6 @@ plugins {
 }
 
 version '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
@@ -19,6 +18,12 @@ java {
     }
 }
 
-test {
-    useJUnitPlatform()
+task fatJar(type: Jar) {
+    manifest {
+        attributes "Main-Class": "com.github.postingbox.PostingboxApplication"
+    }
+    baseName = 'postingbox-all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
