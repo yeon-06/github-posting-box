@@ -6,5 +6,4 @@ blog:
   date-class-name: date
 
 github:
-  access-token: ${ACCESS_TOKEN}
   repo-name: yeon-06/yeon-06

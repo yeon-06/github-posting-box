@@ -6,6 +6,8 @@ import com.github.postingbox.service.PostingService;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.HtmlSupporter;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -29,8 +31,9 @@ public class PostingboxApplication {
 
     private static Properties getProperties() {
         Properties properties = new Properties();
-        try {
-            InputStream stream = PostingboxApplication.class.getResourceAsStream("../../../../resources/application.yml");
+        File file = new File("src/main/resources/application.yml");
+
+        try (InputStream stream = new FileInputStream(file)) {
             properties.load(stream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,7 +53,7 @@ public class PostingboxApplication {
 
     private static GitHubInfo getGitHubInfo(Properties properties) {
         return new GitHubInfo(
-                properties.getProperty("access-token"),
+                System.getenv("ACCESS_TOKEN"),
                 properties.getProperty("repo-name")
         );
     }
