@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
     steps:
       - name: 🗂️ checkout repository
@@ -28,4 +30,4 @@ jobs:
         run: ./gradlew fatJar
 
       - name: 🪩 execute jar
-        run: java -DACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }} -jar ./build/libs/postingbox-all*.jar
+        run: java -DACCESS_TOKEN=${{ env.ACCESS_TOKEN }} -jar ./build/libs/postingbox-all*.jar
