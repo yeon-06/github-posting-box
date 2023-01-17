@@ -22,8 +22,8 @@ public class Board {
         this.date = toDate(date);
     }
 
-    public boolean isTodayPost() {
-        return date.isEqual(LocalDate.now());
+    public boolean isPostedDate(final LocalDate date) {
+        return this.date.isEqual(date);
     }
 
     public void setResizedImageName(final String resizedImageName) {

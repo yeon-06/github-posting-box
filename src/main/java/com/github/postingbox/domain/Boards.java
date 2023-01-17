@@ -1,5 +1,6 @@
 package com.github.postingbox.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class Boards {
@@ -10,9 +11,9 @@ public class Boards {
         this.value = value;
     }
 
-    public boolean containsToday() {
+    public boolean containsDate(final LocalDate date) {
         return value.stream()
-                .anyMatch(Board::isTodayPost);
+                .anyMatch(it -> it.isPostedDate(date));
     }
 
     public List<Board> getValue() {

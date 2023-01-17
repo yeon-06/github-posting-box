@@ -55,7 +55,8 @@ public class PostingService {
         Document document = htmlSupporter.loadScript(blogInfo.getUrl());
         Boards boards = toBoards(document);
 
-        if (boards.containsToday()) {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        if (boards.containsDate(yesterday)) {
             executeGitHubApi(boards);
         }
     }
