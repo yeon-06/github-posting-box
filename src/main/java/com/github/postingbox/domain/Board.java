@@ -1,8 +1,8 @@
 package com.github.postingbox.domain;
 
+import com.github.postingbox.support.DateParser;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class Board {
 
@@ -19,7 +19,7 @@ public class Board {
         this.link = link;
         this.summary = summary;
         this.imageUrl = imageUrl;
-        this.date = toDate(date);
+        this.date = DateParser.parse(date);
     }
 
     public boolean isPostedDate(final LocalDate date) {
@@ -28,14 +28,6 @@ public class Board {
 
     public void setResizedImageName(final String resizedImageName) {
         this.resizedImageName = resizedImageName;
-    }
-
-    private LocalDate toDate(final String date) {
-        try {
-            return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy. MM. dd."));
-        } catch (DateTimeParseException e) {
-            return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy. MM. d."));
-        }
     }
 
     public String getTitle() {
