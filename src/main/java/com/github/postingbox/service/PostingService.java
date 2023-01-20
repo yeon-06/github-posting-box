@@ -92,14 +92,20 @@ public class PostingService {
         String branch = "refs/heads/post" + today;
         String commitMessage = String.format("docs: %s 블로그 포스트 업데이트", today);
 
-        gitHubClient.createBranch(branch);
-        gitHubClient.deleteFiles(IMG_DIRECTORY_NAME, branch);
+        try {
+            gitHubClient.createBranch(branch);
+            gitHubClient.deleteFiles(IMG_DIRECTORY_NAME, branch);
 
-        Map<String, ImageDto> imageFiles = generateImageFiles(boards);
-        gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
-        uploadFiles(boards, imageFiles, branch);
+            Map<String, ImageDto> imageFiles = generateImageFiles(boards);
+            gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
+            uploadFiles(boards, imageFiles, branch);
 
-        gitHubClient.merge(branch, commitMessage);
+            gitHubClient.merge(branch, commitMessage);
+
+        } catch (Exception e) {
+            gitHubClient.removeBranch(branch);
+            e.printStackTrace();
+        }
     }
 
     private String generateContents(final Boards boards) {

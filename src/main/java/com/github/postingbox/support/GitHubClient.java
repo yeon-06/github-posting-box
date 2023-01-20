@@ -1,15 +1,13 @@
 package com.github.postingbox.support;
 
 import com.github.postingbox.domain.GitHubInfo;
+
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHContent;
-import org.kohsuke.github.GHPullRequest;
+
+import org.kohsuke.github.*;
 import org.kohsuke.github.GHPullRequest.MergeMethod;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHubBuilder;
 
 public class GitHubClient {
 
@@ -28,8 +26,16 @@ public class GitHubClient {
     public void createBranch(final String branch) {
         try {
             GHCommit ghCommit = recentCommit();
-
             repository.createRef(branch, ghCommit.getSHA1());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeBranch(final String branch) {
+        try {
+            repository.getRef(branch)
+                    .delete();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,11 +75,22 @@ public class GitHubClient {
     }
 
     public void merge(final String branch, final String commitMessage) {
+        GHPullRequest pullRequest = new GHPullRequest();
+
         try {
-            GHPullRequest pullRequest = repository.createPullRequest(commitMessage, branch, "main", "");
+            pullRequest = repository.createPullRequest(commitMessage, branch, "main", "");
             pullRequest.merge(commitMessage, recentCommit().getSHA1(), MergeMethod.SQUASH);
+
         } catch (IOException e) {
+            closePr(pullRequest);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void closePr(final GHPullRequest pullRequest) {
+        try {
+            pullRequest.close();
+        } catch (IOException ignore) {
         }
     }
 
