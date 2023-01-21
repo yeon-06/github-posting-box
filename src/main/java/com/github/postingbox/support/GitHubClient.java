@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
+import com.github.postingbox.exception.GitHubApiException;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHPullRequest.MergeMethod;
 
@@ -19,7 +20,7 @@ public class GitHubClient {
                     .build()
                     .getRepository(gitHubInfo.getRepoName());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GitHubApiException("레포지토리 정보를 불러오는데 실패했습닌다.", e);
         }
     }
 
@@ -28,7 +29,7 @@ public class GitHubClient {
             GHCommit ghCommit = recentCommit();
             repository.createRef(branch, ghCommit.getSHA1());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GitHubApiException("브랜치 생성 실패", e);
         }
     }
 
@@ -37,7 +38,7 @@ public class GitHubClient {
             repository.getRef(branch)
                     .delete();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GitHubApiException("브랜치 삭제 실패", e);
         }
     }
 
@@ -46,7 +47,7 @@ public class GitHubClient {
             repository.getFileContent("README.md")
                     .update(content, commitMessage, branch);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GitHubApiException("리드미 변경 실패", e);
         }
     }
 
@@ -70,7 +71,7 @@ public class GitHubClient {
                     .commit();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GitHubApiException("파일 업로드 실패", e);
         }
     }
 
@@ -83,7 +84,7 @@ public class GitHubClient {
 
         } catch (IOException e) {
             closePr(pullRequest);
-            throw new RuntimeException(e);
+            throw new GitHubApiException("PR 생성 또는 머지 실패", e);
         }
     }
 
@@ -102,9 +103,9 @@ public class GitHubClient {
                     try {
                         return o.getCommitDate();
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new GitHubApiException("커밋 날짜 불러오는데 실패", e);
                     }
                 }))
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new GitHubApiException("최근 커밋을 불러오는데 실패"));
     }
 }

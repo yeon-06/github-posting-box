@@ -104,7 +104,6 @@ public class PostingService {
 
         } catch (Exception e) {
             gitHubClient.removeBranch(branch);
-            e.printStackTrace();
         }
     }
 

@@ -17,13 +17,13 @@ public class FileSupporter {
     private static final String LINE_SEPARATOR = System.lineSeparator();
 
     public String findFileContent(final String path) {
-        try {
-            FileReader fileReader = new FileReader(path);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+        FileReader fileReader = findFileReader(path);
+
+        try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             return bufferedReader.lines()
                     .collect(Collectors.joining(LINE_SEPARATOR));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("BufferedReader를 읽을 수 없습니다.", e);
         }
     }
 
@@ -31,7 +31,7 @@ public class FileSupporter {
         try {
             return FileUtils.readFileToByteArray(file);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("유효하지 않은 file 입니다.", e);
         }
     }
 
@@ -50,7 +50,17 @@ public class FileSupporter {
             return file;
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            String message = String.format("파일의 이미지 크기를 변경할 수 없습니다. -> path: %s", path);
+            throw new IllegalArgumentException(message, e);
+        }
+    }
+
+    private FileReader findFileReader(final String path) {
+        try {
+            return new FileReader(path);
+        } catch (FileNotFoundException e) {
+            String message = String.format("올바른 경로명을 입력하지 않아 파일을 찾을 수 없습니다 -> path: %s", path);
+            throw new IllegalArgumentException(message, e);
         }
     }
 
@@ -59,7 +69,8 @@ public class FileSupporter {
             URL url = new URL(path);
             return ImageIO.read(url);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            String message = String.format("BufferedImage로 변환할 수 없습니다. -> path: %s", path);
+            throw new IllegalArgumentException(message, e);
         }
     }
 }

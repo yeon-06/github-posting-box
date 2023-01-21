@@ -36,7 +36,7 @@ public class PostingboxApplication {
         try (InputStream stream = new FileInputStream(file)) {
             properties.load(stream);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("file을 읽어올 수 없습니다.");
         }
         return properties;
     }

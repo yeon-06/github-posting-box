@@ -13,7 +13,7 @@ public class HtmlSupporter {
         try {
             return Jsoup.connect(urlPath).get();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("html 코드를 가져올 수 없습니다.",e);
         }
     }
 
