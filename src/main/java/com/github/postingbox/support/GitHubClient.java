@@ -4,6 +4,7 @@ import com.github.postingbox.domain.GitHubInfo;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import com.github.postingbox.exception.GitHubApiException;
@@ -26,8 +27,7 @@ public class GitHubClient {
 
     public void createBranch(final String branch) {
         try {
-            GHCommit ghCommit = recentCommit();
-            repository.createRef(branch, ghCommit.getSHA1());
+            repository.createRef(branch, recentCommit());
         } catch (IOException e) {
             throw new GitHubApiException("브랜치 생성 실패", e);
         }
@@ -80,7 +80,8 @@ public class GitHubClient {
 
         try {
             pullRequest = repository.createPullRequest(commitMessage, branch, "main", "");
-            pullRequest.merge(commitMessage, recentCommit().getSHA1(), MergeMethod.SQUASH);
+            String commit = pullRequest.getHead().getSha();
+            pullRequest.merge(commitMessage, commit, MergeMethod.SQUASH);
 
         } catch (IOException e) {
             closePr(pullRequest);
@@ -95,17 +96,20 @@ public class GitHubClient {
         }
     }
 
-    private GHCommit recentCommit() throws IOException {
+    private String recentCommit() throws IOException {
         return repository.listCommits()
                 .toList()
                 .stream()
-                .max(Comparator.comparing((GHCommit o) -> {
-                    try {
-                        return o.getCommitDate();
-                    } catch (IOException e) {
-                        throw new GitHubApiException("커밋 날짜 불러오는데 실패", e);
-                    }
-                }))
-                .orElseThrow(() -> new GitHubApiException("최근 커밋을 불러오는데 실패"));
+                .max(Comparator.comparing(GitHubClient::extractCommitDate))
+                .orElseThrow(() -> new GitHubApiException("디폴트 브랜치에서 최근 커밋을 불러오는데 실패"))
+                .getSHA1();
+    }
+
+    private static Date extractCommitDate(GHCommit o) {
+        try {
+            return o.getCommitDate();
+        } catch (IOException e) {
+            throw new GitHubApiException("커밋 날짜 불러오는데 실패", e);
+        }
     }
 }
