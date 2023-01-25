@@ -169,8 +169,7 @@ public class PostingService {
             board.setResizedImageName(fileName);
             File file = fileSupporter.resizeAndSave(
                     board.getImageUrl(),
-                    RESOURCE_PATH + fileName + IMG_TYPE,
-                    400);
+                    RESOURCE_PATH + fileName + IMG_TYPE);
             imageFiles.put(fileName, new ImageDto(fileSupporter.findFileContent(file)));
         }
         return imageFiles;

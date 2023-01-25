@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 public class FileSupporter {
 
     private static final String LINE_SEPARATOR = System.lineSeparator();
+    private static final int WIDTH = 400;
+    private static final int HEIGHT = 200;
 
     public String findFileContent(final String path) {
         FileReader fileReader = findFileReader(path);
@@ -35,13 +37,13 @@ public class FileSupporter {
         }
     }
 
-    public File resizeAndSave(final String path, final String filePath, final int size) {
+    public File resizeAndSave(final String path, final String filePath) {
         try {
             BufferedImage bufferedImage = toBufferedImage(path);
-            BufferedImage resizedBufferedImage = new BufferedImage(size, size, bufferedImage.getType());
+            BufferedImage resizedBufferedImage = new BufferedImage(WIDTH, HEIGHT, bufferedImage.getType());
 
             Graphics2D graphics = resizedBufferedImage.createGraphics();
-            graphics.drawImage(bufferedImage, 0, 0, size, size, null);
+            graphics.drawImage(bufferedImage, 0, 0, WIDTH, HEIGHT, null);
             graphics.dispose();
 
             Path createdPath = Files.createFile(Paths.get(filePath));
