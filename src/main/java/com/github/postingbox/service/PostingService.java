@@ -167,9 +167,9 @@ public class PostingService {
         for (Board board : boards.getValue()) {
             String fileName = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE) + IMG_TYPE;
             board.setResizedImageName(fileName);
-            File file = fileSupporter.resizeAndSave(
+            File file = fileSupporter.resize(
                     board.getImageUrl(),
-                    RESOURCE_PATH + fileName + IMG_TYPE);
+                    RESOURCE_PATH + fileName);
             imageFiles.put(fileName, new ImageDto(fileSupporter.findFileContent(file)));
         }
         return imageFiles;

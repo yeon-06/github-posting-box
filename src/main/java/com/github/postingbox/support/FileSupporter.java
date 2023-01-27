@@ -7,9 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 public class FileSupporter {
@@ -37,7 +34,7 @@ public class FileSupporter {
         }
     }
 
-    public File resizeAndSave(final String path, final String filePath) {
+    public File resize(final String path, final String filePath) {
         try {
             BufferedImage bufferedImage = toBufferedImage(path);
             BufferedImage resizedBufferedImage = new BufferedImage(WIDTH, HEIGHT, bufferedImage.getType());
@@ -46,8 +43,7 @@ public class FileSupporter {
             graphics.drawImage(bufferedImage, 0, 0, WIDTH, HEIGHT, null);
             graphics.dispose();
 
-            Path createdPath = Files.createFile(Paths.get(filePath));
-            File file = new File(createdPath.toUri());
+            File file = new File(filePath);
             ImageIO.write(resizedBufferedImage, "png", file);
             return file;
 
