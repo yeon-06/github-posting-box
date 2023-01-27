@@ -8,6 +8,7 @@ import com.github.postingbox.service.dto.ImageDto;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
+import com.github.postingbox.support.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -152,7 +153,7 @@ public class PostingService {
                 blogUrl + board.getLink(),
                 String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),
                 board.getTitle(),
-                board.getSummary().substring(0, 50) + "...",
+                StringUtil.substringByByte(110, board.getSummary()) + "...",
                 toDate(board)
         );
     }
