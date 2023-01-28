@@ -4,7 +4,6 @@ import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
-import com.github.postingbox.service.dto.ImageDto;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
@@ -97,7 +96,7 @@ public class PostingService {
             gitHubClient.createBranch(branch);
             gitHubClient.deleteFiles(IMG_DIRECTORY_NAME, branch);
 
-            Map<String, ImageDto> imageFiles = generateImageFiles(boards);
+            Map<String, File> imageFiles = generateImageFiles(boards);
             gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
             uploadFiles(boards, imageFiles, branch);
 
@@ -113,11 +112,11 @@ public class PostingService {
         return fileContents + LINE_SEPARATOR + generateContents(boards, blogInfo.getUrl());
     }
 
-    private void uploadFiles(final Boards boards, final Map<String, ImageDto> imageFiles, final String branch) {
+    private void uploadFiles(final Boards boards, final Map<String, File> imageFiles, final String branch) {
         for (Board board : boards.getValue()) {
             String imageName = board.getResizedImageName();
             String imagePath = String.format("%s/%s", IMG_DIRECTORY_NAME, imageName);
-            byte[] content = imageFiles.get(imageName).getValue();
+            byte[] content = fileSupporter.findFileContent(imageFiles.get(imageName));
             gitHubClient.uploadFile(imagePath, content, branch);
         }
     }
@@ -163,15 +162,15 @@ public class PostingService {
         return String.format("%d.%02d.%02d", date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth());
     }
 
-    private Map<String, ImageDto> generateImageFiles(final Boards boards) {
-        Map<String, ImageDto> imageFiles = new HashMap<>();
+    private Map<String, File> generateImageFiles(final Boards boards) {
+        Map<String, File> imageFiles = new HashMap<>();
         for (Board board : boards.getValue()) {
             String fileName = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE) + IMG_TYPE;
             board.setResizedImageName(fileName);
             File file = fileSupporter.resize(
                     board.getImageUrl(),
                     RESOURCE_PATH + fileName);
-            imageFiles.put(fileName, new ImageDto(fileSupporter.findFileContent(file)));
+            imageFiles.put(fileName, file);
         }
         return imageFiles;
     }
