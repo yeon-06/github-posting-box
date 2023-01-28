@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 
 public class PostingService {
 
+    private static final DateTimeFormatter BRANCH_NAME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter BOARD_DATE_FORMAT = DateTimeFormatter.ofPattern("yy.MM.dd");
+
     private static final int COLUMN_SIZE = 3;
     private static final String LINE_SEPARATOR = System.lineSeparator();
     private static final String LINK_START_STRING = "https:";
@@ -88,7 +91,7 @@ public class PostingService {
     }
 
     private void executeGitHubApi(final Boards boards) {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String today = LocalDate.now().format(BRANCH_NAME_FORMAT);
         String branch = "refs/heads/post" + today;
         String commitMessage = String.format("docs: %s 블로그 포스트 업데이트", today);
 
@@ -153,13 +156,8 @@ public class PostingService {
                 String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),
                 board.getTitle(),
                 StringUtil.substringByByte(110, board.getSummary()) + "...",
-                toDate(board)
+                board.getDate().format(BOARD_DATE_FORMAT)
         );
-    }
-
-    private String toDate(final Board board) {
-        LocalDate date = board.getDate();
-        return String.format("%d.%02d.%02d", date.getYear() % 100, date.getMonthValue(), date.getDayOfMonth());
     }
 
     private Map<String, File> generateImageFiles(final Boards boards) {
