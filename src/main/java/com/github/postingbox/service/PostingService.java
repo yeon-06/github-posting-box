@@ -47,7 +47,7 @@ public class PostingService {
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
         if (boards.containsDate(yesterday)) {
-            executeGitHubApi(boards);
+            executeGitHubApi(boards, yesterday);
         }
     }
 
@@ -77,10 +77,10 @@ public class PostingService {
         return LINK_START_STRING + imageLink;
     }
 
-    private void executeGitHubApi(final Boards boards) {
-        String today = LocalDate.now().format(BRANCH_NAME_FORMAT);
-        String branch = "refs/heads/post" + today;
-        String commitMessage = String.format("docs: %s 블로그 포스트 업데이트", today);
+    private void executeGitHubApi(final Boards boards, final LocalDate recentPostDate) {
+        String dateString = recentPostDate.format(BRANCH_NAME_FORMAT);
+        String branch = "refs/heads/post" + dateString;
+        String commitMessage = String.format("docs: %s 일자 포스팅 목록 업데이트", dateString);
 
         try {
             gitHubClient.createBranch(branch);
