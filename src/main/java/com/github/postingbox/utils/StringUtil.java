@@ -1,4 +1,4 @@
-package com.github.postingbox.support;
+package com.github.postingbox.utils;
 
 import java.io.UnsupportedEncodingException;
 

@@ -4,10 +4,10 @@ import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
+import com.github.postingbox.utils.ContentsGenerateUtil;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
-import com.github.postingbox.support.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,30 +16,17 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static com.github.postingbox.constants.FileConstant.*;
+
 public class PostingService {
 
     private static final DateTimeFormatter BRANCH_NAME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private static final DateTimeFormatter BOARD_DATE_FORMAT = DateTimeFormatter.ofPattern("yy.MM.dd");
 
-    private static final int COLUMN_SIZE = 3;
-    private static final String LINE_SEPARATOR = System.lineSeparator();
     private static final String LINK_START_STRING = "https:";
-    private static final String IMG_DIRECTORY_NAME = "img";
-    private static final String IMG_TYPE = ".png";
-    private static final String RESOURCE_PATH = "./src/main/resources/";
-    private static final String BOARD_INFO_FORMAT = "<td>" + LINE_SEPARATOR
-            + "    <a href=\"%s\">" + LINE_SEPARATOR
-            + "        <img width=\"100%%\" src=\"%s\"/><br/>" + LINE_SEPARATOR
-            + "        <div>%s</div>" + LINE_SEPARATOR
-            + "    </a>" + LINE_SEPARATOR
-            + "    <div>%s</div>" + LINE_SEPARATOR
-            + "    <div>%s</div>" + LINE_SEPARATOR
-            + "</td>";
 
     private final BlogInfo blogInfo;
     private final HtmlSupporter htmlSupporter;
@@ -112,7 +99,7 @@ public class PostingService {
 
     private String generateContents(final Boards boards) {
         String fileContents = fileSupporter.findFileContent(RESOURCE_PATH + "/templates/default.md");
-        return fileContents + LINE_SEPARATOR + generateContents(boards, blogInfo.getUrl());
+        return ContentsGenerateUtil.toContents(fileContents, boards, blogInfo.getUrl());
     }
 
     private void uploadFiles(final Boards boards, final Map<String, File> imageFiles, final String branch) {
@@ -122,42 +109,6 @@ public class PostingService {
             byte[] content = fileSupporter.findFileContent(imageFiles.get(imageName));
             gitHubClient.uploadFile(imagePath, content, branch);
         }
-    }
-
-    private String generateContents(final Boards boards, final String blogUrl) {
-        List<Board> boardList = boards.getValue();
-        int size = boardList.size();
-
-        StringBuilder stringBuilder = new StringBuilder().append("<table><tbody>");
-
-        for (int i = 0; i < size; i++) {
-            if (i % COLUMN_SIZE == 0) {
-                stringBuilder.append("<tr>")
-                        .append(LINE_SEPARATOR);
-            }
-
-            stringBuilder.append(generateTdTag(blogUrl, boardList.get(i)))
-                    .append(LINE_SEPARATOR);
-
-            if (i % COLUMN_SIZE == COLUMN_SIZE - 1 || i == size - 1) {
-                stringBuilder.append("</tr>")
-                        .append(LINE_SEPARATOR);
-            }
-        }
-
-        stringBuilder.append("</tbody></table>");
-
-        return stringBuilder.toString();
-    }
-
-    private String generateTdTag(final String blogUrl, final Board board) {
-        return String.format(BOARD_INFO_FORMAT,
-                blogUrl + board.getLink(),
-                String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),
-                board.getTitle(),
-                StringUtil.substringByByte(110, board.getSummary()) + "...",
-                board.getDate().format(BOARD_DATE_FORMAT)
-        );
     }
 
     private Map<String, File> generateImageFiles(final Boards boards) {

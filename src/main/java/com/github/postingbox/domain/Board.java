@@ -1,6 +1,6 @@
 package com.github.postingbox.domain;
 
-import com.github.postingbox.support.DateParser;
+import com.github.postingbox.utils.DateParseUtil;
 
 import java.time.LocalDate;
 
@@ -19,7 +19,7 @@ public class Board {
         this.link = link;
         this.summary = summary;
         this.imageUrl = imageUrl;
-        this.date = DateParser.parse(date);
+        this.date = DateParseUtil.parse(date);
     }
 
     public boolean isPostedDate(final LocalDate date) {

@@ -1,10 +1,10 @@
-package com.github.postingbox.support;
+package com.github.postingbox.utils;
 
 import java.time.LocalDate;
 
-public class DateParser {
+public class DateParseUtil {
 
-    private DateParser() {
+    private DateParseUtil() {
     }
 
     public static LocalDate parse(final String text) {
