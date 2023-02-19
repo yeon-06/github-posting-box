@@ -1,12 +1,11 @@
 package com.github.postingbox.utils;
 
+import static com.github.postingbox.constants.FileConstant.IMG_DIRECTORY_NAME;
+
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
-
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import static com.github.postingbox.constants.FileConstant.IMG_DIRECTORY_NAME;
 
 public class ContentsGenerateUtil {
 
@@ -57,7 +56,7 @@ public class ContentsGenerateUtil {
                 blogUrl + board.getLink(),
                 String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),
                 board.getTitle(),
-                StringUtil.substringByByte(110, board.getSummary()) + "...",
+                StringUtil.removeLink(StringUtil.substringByByte(110, board.getSummary()) + "..."),
                 board.getDate().format(BOARD_DATE_FORMAT)
         );
     }
