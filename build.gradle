@@ -10,12 +10,18 @@ repositories {
 dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation group: 'org.kohsuke', name: 'github-api', version: '1.313'
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 }
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 task fatJar(type: Jar) {
