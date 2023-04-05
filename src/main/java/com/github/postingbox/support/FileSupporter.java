@@ -1,5 +1,6 @@
 package com.github.postingbox.support;
 
+import com.github.postingbox.support.dto.ImageSizeDto;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -15,8 +16,6 @@ import org.apache.commons.io.FileUtils;
 public class FileSupporter {
 
 	private static final String LINE_SEPARATOR = System.lineSeparator();
-	private static final int WIDTH = 400;
-	private static final int HEIGHT = 200;
 
 	public String findFileContent(final String path) {
 		FileReader fileReader = findFileReader(path);
@@ -40,10 +39,14 @@ public class FileSupporter {
 	public File resize(final String path, final String filePath) {
 		try {
 			BufferedImage bufferedImage = toBufferedImage(path);
-			BufferedImage resizedBufferedImage = new BufferedImage(WIDTH, HEIGHT, bufferedImage.getType());
+			ImageSizeDto imageSize = ImageSizeDto.of(bufferedImage);
+			BufferedImage resizedBufferedImage = new BufferedImage(imageSize.getWidth(), imageSize.getHeight(), bufferedImage.getType());
 
 			Graphics2D graphics = resizedBufferedImage.createGraphics();
-			graphics.drawImage(bufferedImage, 0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, null);
+			graphics.drawImage(bufferedImage,
+				0, 0, imageSize.getWidth(), imageSize.getHeight(),
+				0, 0, imageSize.getWidth(), imageSize.getHeight(),
+				null);
 			graphics.dispose();
 
 			File file = new File(filePath);
