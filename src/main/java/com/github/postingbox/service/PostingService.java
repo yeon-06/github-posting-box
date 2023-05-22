@@ -1,17 +1,17 @@
 package com.github.postingbox.service;
 
+import static com.github.postingbox.constants.FileConstant.IMG_DIRECTORY_NAME;
+import static com.github.postingbox.constants.FileConstant.IMG_TYPE;
+import static com.github.postingbox.constants.FileConstant.RESOURCE_PATH;
+
 import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
-import com.github.postingbox.utils.ContentsGenerateUtil;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.support.HtmlSupporter;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
+import com.github.postingbox.utils.ContentsGenerateUtil;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import static com.github.postingbox.constants.FileConstant.*;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class PostingService {
 
@@ -42,8 +42,7 @@ public class PostingService {
     }
 
     public void updatePostingBox() {
-        Document document = htmlSupporter.loadScript(blogInfo.getUrl());
-        Boards boards = toBoards(document);
+        Boards boards = generateBoards();
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
         if (boards.containsDate(yesterday)) {
@@ -51,8 +50,8 @@ public class PostingService {
         }
     }
 
-    private Boards toBoards(final Document document) {
-        Elements elements = htmlSupporter.extractElements(document, blogInfo.getContentsClassName());
+    private Boards generateBoards() {
+        Elements elements = htmlSupporter.extractElements(blogInfo.getContentsClassName());
 
         return new Boards(elements.stream()
                 .map(this::toBoard)

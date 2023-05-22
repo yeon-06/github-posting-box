@@ -8,20 +8,26 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class HtmlSupporter {
+    
+    private final Document document;
 
-    public Document loadScript(final String urlPath) {
+    private HtmlSupporter(Document document) {
+        this.document = document;
+    }
+
+    public static HtmlSupporter of(String urlPath) {
         try {
-            return Jsoup.connect(urlPath).get();
+            return new HtmlSupporter(Jsoup.connect(urlPath).get());
         } catch (IOException e) {
             throw new IllegalArgumentException("html 코드를 가져올 수 없습니다.",e);
         }
     }
 
-    public Elements extractElements(final Document document, final String className) {
+    public Elements extractElements(String className) {
         return document.getElementsByClass(className);
     }
 
-    public String extractElementText(final Element element, final String className) {
+    public String extractElementText(Element element, String className) {
         Element extractedElement = element.getElementsByClass(className)
                 .first();
         if (extractedElement == null) {
@@ -30,12 +36,12 @@ public class HtmlSupporter {
         return extractedElement.text();
     }
 
-    public String extractLink(final Element element) {
+    public String extractLink(Element element) {
         return element.getElementsByTag("a")
                 .attr("href");
     }
 
-    public String extractImageLink(final Element element) {
+    public String extractImageLink(Element element) {
         return element.getElementsByTag("img")
                 .attr("src");
     }

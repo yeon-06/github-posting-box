@@ -21,9 +21,10 @@ public class PostingboxApplication {
 
     private static PostingService generatePostingService() {
         Properties properties = getProperties();
-        return new PostingService(
-                getBlogInfo(properties),
-                new HtmlSupporter(),
+	    BlogInfo blogInfo = getBlogInfo(properties);
+	    return new PostingService(
+		        blogInfo,
+                HtmlSupporter.of(blogInfo.getUrl()),
                 new FileSupporter(),
                 getGitHubInfo(properties)
         );
