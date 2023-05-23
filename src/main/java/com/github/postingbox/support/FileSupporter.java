@@ -17,7 +17,7 @@ public class FileSupporter {
 
 	private static final String LINE_SEPARATOR = System.lineSeparator();
 
-	public String findFileContent(final String path) {
+	public String findFileContent(String path) {
 		FileReader fileReader = findFileReader(path);
 
 		try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
@@ -28,7 +28,7 @@ public class FileSupporter {
 		}
 	}
 
-	public byte[] findFileContent(final File file) {
+	public byte[] findFileContent(File file) {
 		try {
 			return FileUtils.readFileToByteArray(file);
 		} catch (IOException e) {
@@ -36,7 +36,7 @@ public class FileSupporter {
 		}
 	}
 
-	public File resize(final String path, final String filePath) {
+	public File resize(String path, String filePath) {
 		try {
 			BufferedImage bufferedImage = toBufferedImage(path);
 			ImageSizeDto imageSize = ImageSizeDto.of(bufferedImage);
@@ -59,7 +59,7 @@ public class FileSupporter {
 		}
 	}
 
-	private FileReader findFileReader(final String path) {
+	private FileReader findFileReader(String path) {
 		try {
 			return new FileReader(path);
 		} catch (FileNotFoundException e) {
@@ -68,7 +68,7 @@ public class FileSupporter {
 		}
 	}
 
-	private BufferedImage toBufferedImage(final String path) {
+	private BufferedImage toBufferedImage(String path) {
 		try {
 			URL url = new URL(path);
 			return ImageIO.read(url);

@@ -20,74 +20,73 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class PostingService {
 
-    private static final DateTimeFormatter BRANCH_NAME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+	private static final DateTimeFormatter BRANCH_NAME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    private final BlogInfo blogInfo;
-    private final BoardService boardService;
-    private final FileSupporter fileSupporter;
-    private final GitHubClient gitHubClient;
+	private final BlogInfo blogInfo;
+	private final BoardService boardService;
+	private final FileSupporter fileSupporter;
+	private final GitHubClient gitHubClient;
 
-    public PostingService(final BlogInfo blogInfo, final BoardService boardService, final FileSupporter fileSupporter,
-                          final GitHubInfo gitHubInfo) {
-        this.blogInfo = blogInfo;
-        this.boardService = boardService;
-        this.fileSupporter = fileSupporter;
-        this.gitHubClient = new GitHubClient(gitHubInfo);
-    }
+	public PostingService(BlogInfo blogInfo, BoardService boardService, FileSupporter fileSupporter, GitHubInfo gitHubInfo) {
+		this.blogInfo = blogInfo;
+		this.boardService = boardService;
+		this.fileSupporter = fileSupporter;
+		this.gitHubClient = new GitHubClient(gitHubInfo);
+	}
 
-    public void updatePostingBox() {
-        Boards boards = boardService.generateBoards();
+	public void updatePostingBox() {
+		Boards boards = boardService.generateBoards();
 
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        if (boards.containsDate(yesterday)) {
-            executeGitHubApi(boards, yesterday);
-        }
-    }
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		if (boards.containsDate(yesterday)) {
+			executeGitHubApi(boards, yesterday);
+		}
+	}
 
-    private void executeGitHubApi(final Boards boards, final LocalDate recentPostDate) {
-        String dateString = recentPostDate.format(BRANCH_NAME_FORMAT);
-        String branch = "refs/heads/post" + dateString;
-        String commitMessage = String.format("docs: %s 일자 포스팅 목록 업데이트", dateString);
+	private void executeGitHubApi(Boards boards, LocalDate recentPostDate) {
+		String dateString = recentPostDate.format(BRANCH_NAME_FORMAT);
+		String branch = "refs/heads/post" + dateString;
+		String commitMessage = String.format("docs: %s 일자 포스팅 목록 업데이트", dateString);
 
-        try {
-            gitHubClient.createBranch(branch);
-            gitHubClient.deleteFiles(IMG_DIRECTORY_NAME, branch);
+		try {
+			gitHubClient.createBranch(branch);
+			gitHubClient.deleteFiles(IMG_DIRECTORY_NAME, branch);
 
-            Map<String, File> imageFiles = generateImageFiles(boards);
-            gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
-            uploadFiles(boards, imageFiles, branch);
+			Map<String, File> imageFiles = generateImageFiles(boards);
+			gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
+			uploadFiles(boards, imageFiles, branch);
 
-            gitHubClient.merge(branch, commitMessage);
+			gitHubClient.merge(branch, commitMessage);
 
-        } catch (Exception e) {
-            gitHubClient.removeBranch(branch);
-        }
-    }
+		} catch (Exception e) {
+			gitHubClient.removeBranch(branch);
+		}
+	}
 
-    private String generateContents(final Boards boards) {
-        String fileContents = fileSupporter.findFileContent(RESOURCE_PATH + "/templates/default.md");
-        return ContentsGenerateUtil.toContents(fileContents, boards, blogInfo.getUrl());
-    }
+	private String generateContents(Boards boards) {
+		String fileContents = fileSupporter.findFileContent(RESOURCE_PATH + "/templates/default.md");
+		return ContentsGenerateUtil.toContents(fileContents, boards, blogInfo.getUrl());
+	}
 
-    private void uploadFiles(final Boards boards, final Map<String, File> imageFiles, final String branch) {
-        for (Board board : boards.getValue()) {
-            String imageName = board.getResizedImageName();
-            String imagePath = String.format("%s/%s", IMG_DIRECTORY_NAME, imageName);
-            byte[] content = fileSupporter.findFileContent(imageFiles.get(imageName));
-            gitHubClient.uploadFile(imagePath, content, branch);
-        }
-    }
+	private void uploadFiles(Boards boards, Map<String, File> imageFiles, String branch) {
+		for (Board board : boards.getValue()) {
+			String imageName = board.getResizedImageName();
+			String imagePath = String.format("%s/%s", IMG_DIRECTORY_NAME, imageName);
+			byte[] content = fileSupporter.findFileContent(imageFiles.get(imageName));
+			gitHubClient.uploadFile(imagePath, content, branch);
+		}
+	}
 
-    private Map<String, File> generateImageFiles(final Boards boards) {
-        Map<String, File> imageFiles = new HashMap<>();
-        for (Board board : boards.getValue()) {
-            String fileName = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE) + IMG_TYPE;
-            board.setResizedImageName(fileName);
-            File file = fileSupporter.resize(
-                    board.getImageUrl(),
-                    RESOURCE_PATH + fileName);
-            imageFiles.put(fileName, file);
-        }
-        return imageFiles;
-    }
+	private Map<String, File> generateImageFiles(Boards boards) {
+		Map<String, File> imageFiles = new HashMap<>();
+		for (Board board : boards.getValue()) {
+			String fileName = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE) + IMG_TYPE;
+			board.setResizedImageName(fileName);
+			File file = fileSupporter.resize(
+				board.getImageUrl(),
+				RESOURCE_PATH + fileName);
+			imageFiles.put(fileName, file);
+		}
+		return imageFiles;
+	}
 }

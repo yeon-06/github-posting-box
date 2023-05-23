@@ -25,7 +25,7 @@ public class ContentsGenerateUtil {
 	private ContentsGenerateUtil() {
 	}
 
-	public static String toContents(final String beforeDocs, final Boards boards, final String blogUrl) {
+	public static String toContents(String beforeDocs, Boards boards, String blogUrl) {
 		List<Board> boardList = boards.getValue();
 		int size = Math.min(boardList.size(), MAX_BOARD_SIZE);
 
@@ -52,7 +52,7 @@ public class ContentsGenerateUtil {
 	}
 
 
-	private static String generateTdTag(final String blogUrl, final Board board) {
+	private static String generateTdTag(String blogUrl, Board board) {
 		return String.format(BOARD_INFO_FORMAT,
 			blogUrl + board.getLink(),
 			String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),

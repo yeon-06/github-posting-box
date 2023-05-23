@@ -7,11 +7,11 @@ public class Boards {
 
     private final List<Board> value;
 
-    public Boards(final List<Board> value) {
+    public Boards(List<Board> value) {
         this.value = value;
     }
 
-    public boolean containsDate(final LocalDate date) {
+    public boolean containsDate(LocalDate date) {
         return value.stream()
                 .anyMatch(it -> it.isPostedDate(date));
     }

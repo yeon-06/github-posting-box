@@ -26,7 +26,7 @@ public class ImageSizeDto {
 			height = width / 2;
 		}
 
-		if(width > MAX_WIDTH) {
+		if (width > MAX_WIDTH) {
 			width = MAX_WIDTH;
 			height = MAX_HEIGHT;
 		}

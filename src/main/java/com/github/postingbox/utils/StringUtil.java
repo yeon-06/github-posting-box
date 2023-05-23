@@ -11,7 +11,7 @@ public class StringUtil {
 	private StringUtil() {
 	}
 
-	public static String substringByByte(final int byteSize, final String text) {
+	public static String substringByByte(int byteSize, String text) {
 		if (text == null || text.isEmpty()) {
 			return "";
 		}
@@ -35,7 +35,7 @@ public class StringUtil {
 		return newText.toString();
 	}
 
-	public static String removeLink(final String text) {
+	public static String removeLink(String text) {
 		StringBuilder result = new StringBuilder(text);
 		int linkStartIndex;
 		while ((linkStartIndex = result.indexOf(LINK_START_STRING)) != -1) {
@@ -53,7 +53,7 @@ public class StringUtil {
 		return linkStartIndex + index;
 	}
 
-	private static int getBytesLength(final String text) {
+	private static int getBytesLength(String text) {
 		try {
 			return text.getBytes(DEFAULT_ENCODING).length;
 		} catch (UnsupportedEncodingException e) {

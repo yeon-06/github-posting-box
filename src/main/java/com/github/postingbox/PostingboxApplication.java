@@ -13,48 +13,48 @@ import java.util.Properties;
 
 public class PostingboxApplication {
 
-    public static void main(String[] args) {
-        PostingService postingService = generatePostingService();
-        postingService.updatePostingBox();
-    }
+	public static void main(String[] args) {
+		PostingService postingService = generatePostingService();
+		postingService.updatePostingBox();
+	}
 
-    private static PostingService generatePostingService() {
-        Properties properties = getProperties();
-	    BlogInfo blogInfo = getBlogInfo(properties);
-	    return new PostingService(
-		        blogInfo,
-                new BoardService(blogInfo),
-                new FileSupporter(),
-                getGitHubInfo(properties)
-        );
-    }
+	private static PostingService generatePostingService() {
+		Properties properties = getProperties();
+		BlogInfo blogInfo = getBlogInfo(properties);
+		return new PostingService(
+			blogInfo,
+			new BoardService(blogInfo),
+			new FileSupporter(),
+			getGitHubInfo(properties)
+		);
+	}
 
-    private static Properties getProperties() {
-        Properties properties = new Properties();
-        File file = new File("src/main/resources/application.yml");
+	private static Properties getProperties() {
+		Properties properties = new Properties();
+		File file = new File("src/main/resources/application.yml");
 
-        try (InputStream stream = new FileInputStream(file)) {
-            properties.load(stream);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("file을 읽어올 수 없습니다.");
-        }
-        return properties;
-    }
+		try (InputStream stream = new FileInputStream(file)) {
+			properties.load(stream);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("file을 읽어올 수 없습니다.");
+		}
+		return properties;
+	}
 
-    private static BlogInfo getBlogInfo(Properties properties) {
-        return new BlogInfo(
-                properties.getProperty("url"),
-                properties.getProperty("contents-class-name"),
-                properties.getProperty("title-class-name"),
-                properties.getProperty("summary-class-name"),
-                properties.getProperty("date-class-name")
-        );
-    }
+	private static BlogInfo getBlogInfo(Properties properties) {
+		return new BlogInfo(
+			properties.getProperty("url"),
+			properties.getProperty("contents-class-name"),
+			properties.getProperty("title-class-name"),
+			properties.getProperty("summary-class-name"),
+			properties.getProperty("date-class-name")
+		);
+	}
 
-    private static GitHubInfo getGitHubInfo(Properties properties) {
-        return new GitHubInfo(
-                System.getenv("ACCESS_TOKEN"),
-                properties.getProperty("repo-name")
-        );
-    }
+	private static GitHubInfo getGitHubInfo(Properties properties) {
+		return new GitHubInfo(
+			System.getenv("ACCESS_TOKEN"),
+			properties.getProperty("repo-name")
+		);
+	}
 }
