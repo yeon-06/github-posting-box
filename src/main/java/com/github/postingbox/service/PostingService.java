@@ -10,7 +10,6 @@ import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
-import com.github.postingbox.support.HtmlSupporter;
 import com.github.postingbox.utils.ContentsGenerateUtil;
 import java.io.File;
 import java.time.LocalDate;
@@ -18,62 +17,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class PostingService {
 
     private static final DateTimeFormatter BRANCH_NAME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    private static final String LINK_START_STRING = "https:";
-
     private final BlogInfo blogInfo;
-    private final HtmlSupporter htmlSupporter;
+    private final BoardService boardService;
     private final FileSupporter fileSupporter;
     private final GitHubClient gitHubClient;
 
-    public PostingService(final BlogInfo blogInfo, final HtmlSupporter htmlSupporter, final FileSupporter fileSupporter,
+    public PostingService(final BlogInfo blogInfo, final BoardService boardService, final FileSupporter fileSupporter,
                           final GitHubInfo gitHubInfo) {
         this.blogInfo = blogInfo;
-        this.htmlSupporter = htmlSupporter;
+        this.boardService = boardService;
         this.fileSupporter = fileSupporter;
         this.gitHubClient = new GitHubClient(gitHubInfo);
     }
 
     public void updatePostingBox() {
-        Boards boards = generateBoards();
+        Boards boards = boardService.generateBoards();
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
         if (boards.containsDate(yesterday)) {
             executeGitHubApi(boards, yesterday);
         }
-    }
-
-    private Boards generateBoards() {
-        Elements elements = htmlSupporter.extractElements(blogInfo.getContentsClassName());
-
-        return new Boards(elements.stream()
-                .map(this::toBoard)
-                .collect(Collectors.toList())
-        );
-    }
-
-    private Board toBoard(final Element element) {
-        return new Board(
-                htmlSupporter.extractElementText(element, blogInfo.getTitleClassName()),
-                htmlSupporter.extractLink(element),
-                htmlSupporter.extractElementText(element, blogInfo.getSummaryClassName()),
-                convertImageLink(htmlSupporter.extractImageLink(element)),
-                htmlSupporter.extractElementText(element, blogInfo.getDateClassName())
-        );
-    }
-
-    private String convertImageLink(final String imageLink) {
-        if (imageLink.startsWith(LINK_START_STRING)) {
-            return imageLink;
-        }
-        return LINK_START_STRING + imageLink;
     }
 
     private void executeGitHubApi(final Boards boards, final LocalDate recentPostDate) {
