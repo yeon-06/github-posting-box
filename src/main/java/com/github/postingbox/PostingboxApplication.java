@@ -4,7 +4,6 @@ import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.GitHubInfo;
 import com.github.postingbox.service.BoardService;
 import com.github.postingbox.service.PostingService;
-import com.github.postingbox.support.FileSupporter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,7 +23,6 @@ public class PostingboxApplication {
 		return new PostingService(
 			blogInfo,
 			new BoardService(blogInfo),
-			new FileSupporter(),
 			getGitHubInfo(properties)
 		);
 	}

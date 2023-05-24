@@ -8,14 +8,12 @@ import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
-import com.github.postingbox.support.FileSupporter;
+import com.github.postingbox.support.FileUtil;
 import com.github.postingbox.support.GitHubClient;
-import com.github.postingbox.support.dto.ImageSizeDto;
 import com.github.postingbox.utils.ContentsGenerateUtil;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,13 +24,11 @@ public class PostingService {
 
 	private final BlogInfo blogInfo;
 	private final BoardService boardService;
-	private final FileSupporter fileSupporter;
 	private final GitHubClient gitHubClient;
 
-	public PostingService(BlogInfo blogInfo, BoardService boardService, FileSupporter fileSupporter, GitHubInfo gitHubInfo) {
+	public PostingService(BlogInfo blogInfo, BoardService boardService, GitHubInfo gitHubInfo) {
 		this.blogInfo = blogInfo;
 		this.boardService = boardService;
-		this.fileSupporter = fileSupporter;
 		this.gitHubClient = new GitHubClient(gitHubInfo);
 	}
 
@@ -66,7 +62,7 @@ public class PostingService {
 	}
 
 	private String generateContents(Boards boards) {
-		String fileContents = fileSupporter.findFileContent(RESOURCE_PATH + "/templates/default.md");
+		String fileContents = FileUtil.findFileContent(RESOURCE_PATH + "/templates/default.md");
 		return ContentsGenerateUtil.toContents(fileContents, boards, blogInfo.getUrl());
 	}
 
@@ -74,7 +70,7 @@ public class PostingService {
 		for (Board board : boards.getValue()) {
 			String imageName = board.getResizedImageName();
 			String imagePath = String.format("%s/%s", IMG_DIRECTORY_NAME, imageName);
-			byte[] content = fileSupporter.findFileContent(imageFiles.get(imageName));
+			byte[] content = FileUtil.findFileContent(imageFiles.get(imageName));
 			gitHubClient.uploadFile(imagePath, content, branch);
 		}
 	}
@@ -84,19 +80,12 @@ public class PostingService {
 		for (Board board : boards.getValue()) {
 			String fileName = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE) + IMG_TYPE;
 			board.setResizedImageName(fileName);
-			File file = fileSupporter.resize(
-				board.getImageUrl(),
+			File file = FileUtil.resize(
+				board.getImage(),
 				RESOURCE_PATH + fileName,
-				getImageSize(boards));
+				boards.getImageSize());
 			imageFiles.put(fileName, file);
 		}
 		return imageFiles;
-	}
-
-	private ImageSizeDto getImageSize(Boards boards) {
-		return boards.getValue().stream()
-			.map(it -> ImageSizeDto.of(fileSupporter.toBufferedImage(it.getImageUrl())))
-			.min(Comparator.comparingInt(ImageSizeDto::getHeight))
-			.orElse(ImageSizeDto.of());
 	}
 }

@@ -13,11 +13,14 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 
-public class FileSupporter {
+public class FileUtil {
 
 	private static final String LINE_SEPARATOR = System.lineSeparator();
 
-	public String findFileContent(String path) {
+	private FileUtil() {
+	}
+
+	public static String findFileContent(String path) {
 		FileReader fileReader = findFileReader(path);
 
 		try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
@@ -28,7 +31,7 @@ public class FileSupporter {
 		}
 	}
 
-	public byte[] findFileContent(File file) {
+	public static byte[] findFileContent(File file) {
 		try {
 			return FileUtils.readFileToByteArray(file);
 		} catch (IOException e) {
@@ -36,9 +39,8 @@ public class FileSupporter {
 		}
 	}
 
-	public File resize(String path, String filePath, ImageSizeDto imageSize) {
+	public static File resize(BufferedImage bufferedImage, String filePath, ImageSizeDto imageSize) {
 		try {
-			BufferedImage bufferedImage = toBufferedImage(path);
 			BufferedImage resizedBufferedImage = new BufferedImage(imageSize.getWidth(), imageSize.getHeight(), bufferedImage.getType());
 
 			Graphics2D graphics = resizedBufferedImage.createGraphics();
@@ -53,12 +55,12 @@ public class FileSupporter {
 			return file;
 
 		} catch (IOException e) {
-			String message = String.format("파일의 이미지 크기를 변경할 수 없습니다. -> path: %s", path);
+			String message = String.format("이미지 크기를 변경할 수 없습니다. -> filePath: %s", filePath);
 			throw new IllegalArgumentException(message, e);
 		}
 	}
 
-	private FileReader findFileReader(String path) {
+	private static FileReader findFileReader(String path) {
 		try {
 			return new FileReader(path);
 		} catch (FileNotFoundException e) {
@@ -67,7 +69,7 @@ public class FileSupporter {
 		}
 	}
 
-	public BufferedImage toBufferedImage(String path) {
+	public static BufferedImage toBufferedImage(String path) {
 		try {
 			URL url = new URL(path);
 			return ImageIO.read(url);

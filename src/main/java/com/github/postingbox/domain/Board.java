@@ -1,6 +1,8 @@
 package com.github.postingbox.domain;
 
+import com.github.postingbox.support.FileUtil;
 import com.github.postingbox.utils.DateParseUtil;
+import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 
 public class Board {
@@ -8,7 +10,7 @@ public class Board {
 	private final String title;
 	private final String link;
 	private final String summary;
-	private final String imageUrl;
+	private final BufferedImage image;
 	private final LocalDate date;
 	private String resizedImageName;
 
@@ -16,7 +18,7 @@ public class Board {
 		this.title = title;
 		this.link = link;
 		this.summary = summary;
-		this.imageUrl = imageUrl;
+		this.image = FileUtil.toBufferedImage(imageUrl);
 		this.date = DateParseUtil.parse(date);
 	}
 
@@ -40,8 +42,8 @@ public class Board {
 		return summary;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
+	public BufferedImage getImage() {
+		return image;
 	}
 
 	public LocalDate getDate() {
