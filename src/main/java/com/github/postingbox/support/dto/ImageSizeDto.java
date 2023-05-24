@@ -15,6 +15,10 @@ public class ImageSizeDto {
 		this.width = width;
 	}
 
+	public static ImageSizeDto of() {
+		return new ImageSizeDto(MAX_HEIGHT, MAX_WIDTH);
+	}
+
 	public static ImageSizeDto of(BufferedImage bufferedImage) {
 		int height = bufferedImage.getHeight();
 		int width = bufferedImage.getWidth();

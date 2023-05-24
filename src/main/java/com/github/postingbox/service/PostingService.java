@@ -10,10 +10,12 @@ import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
 import com.github.postingbox.support.FileSupporter;
 import com.github.postingbox.support.GitHubClient;
+import com.github.postingbox.support.dto.ImageSizeDto;
 import com.github.postingbox.utils.ContentsGenerateUtil;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -84,9 +86,17 @@ public class PostingService {
 			board.setResizedImageName(fileName);
 			File file = fileSupporter.resize(
 				board.getImageUrl(),
-				RESOURCE_PATH + fileName);
+				RESOURCE_PATH + fileName,
+				getImageSize(boards));
 			imageFiles.put(fileName, file);
 		}
 		return imageFiles;
+	}
+
+	private ImageSizeDto getImageSize(Boards boards) {
+		return boards.getValue().stream()
+			.map(it -> ImageSizeDto.of(fileSupporter.toBufferedImage(it.getImageUrl())))
+			.min(Comparator.comparingInt(ImageSizeDto::getHeight))
+			.orElse(ImageSizeDto.of());
 	}
 }

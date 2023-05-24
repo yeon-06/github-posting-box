@@ -36,10 +36,9 @@ public class FileSupporter {
 		}
 	}
 
-	public File resize(String path, String filePath) {
+	public File resize(String path, String filePath, ImageSizeDto imageSize) {
 		try {
 			BufferedImage bufferedImage = toBufferedImage(path);
-			ImageSizeDto imageSize = ImageSizeDto.of(bufferedImage);
 			BufferedImage resizedBufferedImage = new BufferedImage(imageSize.getWidth(), imageSize.getHeight(), bufferedImage.getType());
 
 			Graphics2D graphics = resizedBufferedImage.createGraphics();
@@ -68,7 +67,7 @@ public class FileSupporter {
 		}
 	}
 
-	private BufferedImage toBufferedImage(String path) {
+	public BufferedImage toBufferedImage(String path) {
 		try {
 			URL url = new URL(path);
 			return ImageIO.read(url);
