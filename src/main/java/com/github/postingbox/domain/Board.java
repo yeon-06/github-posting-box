@@ -1,6 +1,6 @@
 package com.github.postingbox.domain;
 
-import com.github.postingbox.support.FileUtil;
+import com.github.postingbox.utils.FileUtil;
 import com.github.postingbox.utils.DateParseUtil;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;

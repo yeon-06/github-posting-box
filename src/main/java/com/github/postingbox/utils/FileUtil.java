@@ -1,4 +1,4 @@
-package com.github.postingbox.support;
+package com.github.postingbox.utils;
 
 import com.github.postingbox.support.dto.ImageSizeDto;
 import java.awt.Graphics2D;

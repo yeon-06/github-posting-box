@@ -8,7 +8,7 @@ import com.github.postingbox.domain.BlogInfo;
 import com.github.postingbox.domain.Board;
 import com.github.postingbox.domain.Boards;
 import com.github.postingbox.domain.GitHubInfo;
-import com.github.postingbox.support.FileUtil;
+import com.github.postingbox.utils.FileUtil;
 import com.github.postingbox.support.GitHubClient;
 import com.github.postingbox.utils.ContentsGenerateUtil;
 import java.io.File;
