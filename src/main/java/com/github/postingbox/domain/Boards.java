@@ -22,7 +22,7 @@ public class Boards {
 		return value;
 	}
 
-	public ImageSizeDto getImageSize() {
+	public ImageSizeDto getMinImageSize() {
 		return value.stream()
 			.map(it -> ImageSizeDto.of(it.getImage()))
 			.min(Comparator.comparingInt(ImageSizeDto::getHeight))

@@ -83,7 +83,7 @@ public class PostingService {
 			File file = FileUtil.resize(
 				board.getImage(),
 				RESOURCE_PATH + fileName,
-				boards.getImageSize());
+				boards.getMinImageSize());
 			imageFiles.put(fileName, file);
 		}
 		return imageFiles;
