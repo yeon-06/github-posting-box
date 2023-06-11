@@ -56,9 +56,17 @@ public class ContentsGenerateUtil {
 		return String.format(BOARD_INFO_FORMAT,
 			blogUrl + board.getLink(),
 			String.format("/%s/%s", IMG_DIRECTORY_NAME, board.getResizedImageName()),
-			board.getTitle(),
-			StringUtil.removeLink(StringUtil.substringByByte(110, board.getSummary()) + "..."),
+			StringUtil.addSpaceInLongWord(board.getTitle()),
+			generateSummary(board.getSummary()),
 			board.getDate().format(BOARD_DATE_FORMAT)
+		);
+	}
+
+	private static String generateSummary(String summary) {
+		return StringUtil.addSpaceInLongWord(
+			StringUtil.removeLink(
+				StringUtil.substringByByte(110, summary) + "..."
+			)
 		);
 	}
 }

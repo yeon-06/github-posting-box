@@ -53,6 +53,10 @@ public class StringUtil {
 		return linkStartIndex + index;
 	}
 
+	public static String addSpaceInLongWord(String text) {
+		return text.replaceAll("(\\S{9})", "$1 ");
+	}
+
 	private static int getBytesLength(String text) {
 		try {
 			return text.getBytes(DEFAULT_ENCODING).length;
