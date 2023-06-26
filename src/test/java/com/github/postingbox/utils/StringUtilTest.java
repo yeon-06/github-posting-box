@@ -47,20 +47,20 @@ class StringUtilTest {
     }
 
     @Test
-    void word_size_less_than_9() {
+    void word_size_less_than_14() {
         // given
-        String text = "123456789 0";
+        String text = "1234567890123 0";
 
         // when & then
-        assertEquals("123456789 0 ", StringUtil.addSpaceInLongWord(text));
+        assertEquals("1234567890123 0 ", StringUtil.addSpaceInLongWord(text));
     }
 
     @Test
-    void word_size_more_than_9() {
+    void word_size_more_than_14() {
         // given
-        String text = "1234567890";
+        String text = "123456789012345";
 
         // when & then
-        assertEquals("123456789 0 ", StringUtil.addSpaceInLongWord(text));
+        assertEquals("12345678901234 5 ", StringUtil.addSpaceInLongWord(text));
     }
 }

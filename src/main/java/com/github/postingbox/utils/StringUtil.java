@@ -8,7 +8,7 @@ public class StringUtil {
 	private static final String LINK_START_STRING = "http";
 	private static final String LINK_END_STRING = " ";
 	private static final String BLANK = " ";
-	private static final int MAX_WORD_LENGTH = 9;
+	private static final int MAX_WORD_LENGTH = 14;
 
 	private StringUtil() {
 	}
