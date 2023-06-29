@@ -63,4 +63,13 @@ class StringUtilTest {
         // when & then
         assertEquals("12345678901234 5 ", StringUtil.addSpaceInLongWord(text));
     }
+
+    @Test
+    void word_size_more_than_28() {
+        // given
+        String text = "12345678901234567890123456789";
+
+        // when & then
+        assertEquals("12345678901234 56789012345678 9 ", StringUtil.addSpaceInLongWord(text));
+    }
 }

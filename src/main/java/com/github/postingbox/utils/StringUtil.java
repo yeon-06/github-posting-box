@@ -1,6 +1,7 @@
 package com.github.postingbox.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
 
 public class StringUtil {
 
@@ -8,7 +9,7 @@ public class StringUtil {
 	private static final String LINK_START_STRING = "http";
 	private static final String LINK_END_STRING = " ";
 	private static final String BLANK = " ";
-	private static final int MAX_WORD_LENGTH = 14;
+	private static final Pattern WORD_PATTERN = Pattern.compile("(.{14})");
 
 	private StringUtil() {
 	}
@@ -66,11 +67,9 @@ public class StringUtil {
 		return result.toString();
 	}
 
+	// 단어가 14자를 초과하는 경우, 14자마다 공백을 추가한다
 	private static String generateWordWithBlank(String word) {
-		if (word.length() > MAX_WORD_LENGTH) {
-			return word.substring(0, MAX_WORD_LENGTH) + BLANK + word.substring(MAX_WORD_LENGTH);
-		}
-		return word;
+		return WORD_PATTERN.matcher(word).replaceAll("$1" + BLANK);
 	}
 
 	private static int getBytesLength(String text) {
