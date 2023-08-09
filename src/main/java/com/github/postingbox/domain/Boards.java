@@ -13,11 +13,6 @@ public class Boards {
 		this.value = value;
 	}
 
-	public boolean containsDate(LocalDate date) {
-		return value.stream()
-			.anyMatch(it -> it.isPostedDate(date));
-	}
-
 	public List<Board> getValue() {
 		return value;
 	}
@@ -27,5 +22,12 @@ public class Boards {
 			.map(it -> ImageSizeDto.of(it.getImage()))
 			.min(Comparator.comparingInt(ImageSizeDto::getHeight))
 			.orElse(ImageSizeDto.of());
+	}
+
+	public LocalDate getRecentPostDate() {
+		return value.stream()
+			.map(Board::getDate)
+			.max(Comparator.comparing(LocalDate::toEpochDay))
+			.orElseThrow(()-> new IllegalStateException("포스팅 목록에서 최신 날짜를 찾을 때 문제가 발생하였습니다."));
 	}
 }

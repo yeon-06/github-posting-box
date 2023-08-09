@@ -11,10 +11,15 @@ public class DateParseUtil {
 		String regex = findRegex(text);
 		String[] textArr = text.split(regex);
 		return LocalDate.of(
-			toInt(textArr[0]),
+			addYear(toInt(textArr[0])),
 			toInt(textArr[1]),
 			toInt(textArr[2])
 		);
+	}
+
+	// TODO 연도 계산 코드 다시 짜기
+	private static int addYear(int year) {
+		return year < 2000 ? year + 2000 : year;
 	}
 
 	private static String findRegex(String text) {

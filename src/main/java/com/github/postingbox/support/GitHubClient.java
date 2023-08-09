@@ -3,6 +3,8 @@ package com.github.postingbox.support;
 import com.github.postingbox.domain.GitHubInfo;
 import com.github.postingbox.exception.GitHubApiException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +43,16 @@ public class GitHubClient {
 				.delete();
 		} catch (IOException e) {
 			throw new GitHubApiException("브랜치 삭제 실패", e);
+		}
+	}
+
+	public String findReadme() {
+		try {
+			InputStream inputStream = repository.getFileContent("README.md")
+				.read();
+			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new GitHubApiException("리드미 조회 실패", e);
 		}
 	}
 
