@@ -76,10 +76,9 @@ public class ContentsGenerateUtil {
     }
 
     private static String generateSummary(String summary) {
-        return StringUtil.addSpaceInLongWord(
-            StringUtil.removeLink(
-                StringUtil.substringByByte(110, summary) + "..."
-            )
-        );
+        return StringUtil.substringByByte(
+        110,
+            StringUtil.addSpaceInLongWord(StringUtil.removeLink(summary))
+            ) + "...";
     }
 }
