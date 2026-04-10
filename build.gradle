@@ -10,6 +10,8 @@ repositories {
 dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation group: 'org.kohsuke', name: 'github-api', version: '1.313'
+    // JDK ImageIO는 WebP를 기본 지원하지 않아 null을 반환할 수 있음 (티스토리 썸네일 등)
+    implementation 'com.twelvemonkeys.imageio:imageio-webp:3.12.0'
     testImplementation 'org.assertj:assertj-core:3.22.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 }

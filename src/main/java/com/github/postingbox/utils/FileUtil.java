@@ -72,7 +72,14 @@ public class FileUtil {
 	public static BufferedImage toBufferedImage(String path) {
 		try {
 			URL url = new URL(path);
-			return ImageIO.read(url);
+			BufferedImage image = ImageIO.read(url);
+			if (image == null) {
+				throw new IllegalArgumentException(
+					String.format(
+						"이미지 디코딩 결과가 null입니다. WebP 등 미지원 형식이거나 손상된 파일일 수 있습니다. -> path: %s",
+						path));
+			}
+			return image;
 		} catch (IOException e) {
 			String message = String.format("BufferedImage로 변환할 수 없습니다. -> path: %s", path);
 			throw new IllegalArgumentException(message, e);

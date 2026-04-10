@@ -1,4 +1,6 @@
 HELP.md
+# 로컬 전용 시크릿 (절대 커밋하지 마세요)
+local.properties
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

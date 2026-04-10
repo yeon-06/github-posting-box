@@ -71,51 +71,55 @@ public class GitHubClient {
 	}
 
 	public void updateReadme(String content, String commitMessage, String branch) {
+		String branchName = branchNameForApi(branch);
 		try {
 			repository.getFileContent("README.md")
-				.update(content, commitMessage, branch);
-			log.info("README.md 업데이트 커밋 완료 (브랜치: " + branch + ")");
+				.update(content, commitMessage, branchName);
+			log.info("README.md 업데이트 커밋 완료 (브랜치: " + branchName + ")");
 		} catch (IOException e) {
-			log.log(Level.SEVERE, "README.md 업데이트 실패 (브랜치: " + branch + ")", e);
+			log.log(Level.SEVERE, "README.md 업데이트 실패 (브랜치: " + branchName + ")", e);
 			throw new GitHubApiException("리드미 변경 실패", e);
 		}
 	}
 
 	public void deleteFiles(String directory, String branch) {
+		String branchName = branchNameForApi(branch);
 		try {
 			List<GHContent> contents = repository.getDirectoryContent(directory);
 			for (GHContent content : contents) {
-				content.delete("docs: 사용하지 않는 이미지 삭제", branch);
+				content.delete("docs: 사용하지 않는 이미지 삭제", branchName);
 			}
 		} catch (IOException e) {
 			log.log(Level.WARNING,
 				String.format("디렉터리 '%s' 목록 조회 또는 삭제 중 IOException (브랜치=%s). 폴더가 없으면 정상일 수 있습니다.",
-					directory, branch),
+					directory, branchName),
 				e);
 		}
 	}
 
 	public void uploadFile(String filePath, byte[] content, String branch) {
+		String branchName = branchNameForApi(branch);
 		try {
 			repository.createContent()
-				.branch(branch)
+				.branch(branchName)
 				.content(content)
 				.path(filePath)
 				.message("docs: 이미지 생성")
 				.commit();
 
 		} catch (IOException e) {
-			log.log(Level.SEVERE, "파일 업로드 실패: " + filePath + " (브랜치: " + branch + ")", e);
+			log.log(Level.SEVERE, "파일 업로드 실패: " + filePath + " (브랜치: " + branchName + ")", e);
 			throw new GitHubApiException("파일 업로드 실패", e);
 		}
 	}
 
 	public void merge(String branch, String commitMessage) {
 		GHPullRequest pullRequest = new GHPullRequest();
+		String headBranch = branchNameForApi(branch);
 
 		try {
-			log.info(String.format("Pull Request 생성 시도 title='%s', head='%s', base=main", commitMessage, branch));
-			pullRequest = repository.createPullRequest(commitMessage, branch, "main", "");
+			log.info(String.format("Pull Request 생성 시도 title='%s', head='%s', base=main", commitMessage, headBranch));
+			pullRequest = repository.createPullRequest(commitMessage, headBranch, "main", "");
 			log.info("Pull Request 생성됨: #" + pullRequest.getNumber());
 			String commit = pullRequest.getHead().getSha();
 			pullRequest.merge(commitMessage, commit, MergeMethod.SQUASH);
@@ -123,7 +127,7 @@ public class GitHubClient {
 
 		} catch (IOException e) {
 			log.log(Level.SEVERE,
-				String.format("PR 생성 또는 머지 실패 (head='%s', base=main). GitHub은 head에 보통 'refs/heads/' 없이 브랜치 이름만 요구할 수 있습니다.", branch),
+				String.format("PR 생성 또는 머지 실패 (head='%s', base=main)", headBranch),
 				e);
 			closePr(pullRequest);
 			throw new GitHubApiException("PR 생성 또는 머지 실패", e);
@@ -132,12 +136,21 @@ public class GitHubClient {
 
 	private void closePr(GHPullRequest pullRequest) {
 		try {
-			int number = pullRequest.getNumber();
 			pullRequest.close();
-			log.info("실패 처리: Pull Request #" + number + " 을(를) 닫았습니다.");
+			log.info("실패 처리: 열린 Pull Request가 있으면 닫기를 시도했습니다.");
 		} catch (IOException e) {
 			log.log(Level.WARNING, "Pull Request 닫기 스킵 또는 실패 (PR이 아직 생성되지 않았을 수 있음)", e);
 		}
+	}
+
+	/**
+	 * {@code refs/heads/foo} 형태는 ref 생성/삭제 API용이고, PR·Contents API에는 {@code foo}만 넘겨야 한다.
+	 */
+	private static String branchNameForApi(String refOrBranchName) {
+		if (refOrBranchName != null && refOrBranchName.startsWith("refs/heads/")) {
+			return refOrBranchName.substring("refs/heads/".length());
+		}
+		return refOrBranchName;
 	}
 
 	private String recentCommit() throws IOException {

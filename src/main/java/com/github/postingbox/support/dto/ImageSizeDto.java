@@ -1,6 +1,7 @@
 package com.github.postingbox.support.dto;
 
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class ImageSizeDto {
 
@@ -20,6 +21,7 @@ public class ImageSizeDto {
 	}
 
 	public static ImageSizeDto of(BufferedImage bufferedImage) {
+		Objects.requireNonNull(bufferedImage, "bufferedImage가 null입니다. 썸네일 URL 디코딩(ImageIO) 실패 여부를 확인하세요.");
 		int height = bufferedImage.getHeight();
 		int width = bufferedImage.getWidth();
 

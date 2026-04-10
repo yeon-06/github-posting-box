@@ -78,7 +78,7 @@ public class PostingService {
             gitHubClient.updateReadme(generateContents(boards), commitMessage, branch);
             uploadFiles(boards, imageFiles, branch);
 
-            log.info("Pull Request 생성 및 머지 시도 (head는 브랜치 ref 문자열 사용)");
+            log.info("Pull Request 생성 및 머지 시도 (GitHubClient에서 refs/heads/ 접두사는 PR·파일 API용 짧은 이름으로 변환됨)");
             gitHubClient.merge(branch, commitMessage);
             log.info("Pull Request 머지까지 완료했습니다.");
 
