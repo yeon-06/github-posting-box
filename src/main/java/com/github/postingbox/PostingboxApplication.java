@@ -10,12 +10,29 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PostingboxApplication {
 
+	private static final Logger log = Logger.getLogger(PostingboxApplication.class.getName());
+
 	public static void main(String[] args) {
-		PostingService postingService = generatePostingService();
-		postingService.updatePostingBox();
+		try {
+			String token = System.getenv("ACCESS_TOKEN");
+			if (token == null || token.isBlank()) {
+				log.severe("ACCESS_TOKEN 환경 변수가 비어 있거나 없습니다. GitHub Actions 저장소 secrets를 확인하세요.");
+			} else {
+				log.info("ACCESS_TOKEN이 설정되어 있습니다. (토큰 값은 로그에 출력하지 않습니다.)");
+			}
+			log.info("포스팅 박스 업데이트 시작");
+			PostingService postingService = generatePostingService();
+			postingService.updatePostingBox();
+			log.info("포스팅 박스 업데이트 정상 종료");
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "애플리케이션 실행 실패", e);
+			System.exit(1);
+		}
 	}
 
 	private static PostingService generatePostingService() {

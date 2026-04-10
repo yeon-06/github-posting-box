@@ -4,6 +4,8 @@ import com.github.postingbox.domain.BlogInfo;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,12 +14,17 @@ import org.jsoup.select.Elements;
 
 public class HtmlSupporter {
 
+	private static final Logger log = Logger.getLogger(HtmlSupporter.class.getName());
+
 	private final BlogInfo blogInfo;
 	private final Document document;
 
 	public HtmlSupporter(BlogInfo blogInfo) {
 		this.blogInfo = blogInfo;
 		this.document = generateDocument(blogInfo.getUrl());
+		int itemCount = document.getElementsByClass(blogInfo.getContentsClassName()).size();
+		log.info(String.format("블로그 메인에서 class='%s' 요소 %d개를 찾았습니다.",
+			blogInfo.getContentsClassName(), itemCount));
 	}
 
 	public List<String> extractLinks() {
@@ -74,8 +81,10 @@ public class HtmlSupporter {
 
 	private Document generateDocument(String url) {
 		try {
+			log.info("블로그 HTML 요청: " + url);
 			return Jsoup.connect(url).get();
 		} catch (IOException e) {
+			log.log(Level.SEVERE, "블로그 HTML을 가져오지 못했습니다: " + url, e);
 			throw new IllegalArgumentException("html 코드를 가져올 수 없습니다.", e);
 		}
 	}
